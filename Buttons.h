@@ -9,6 +9,7 @@ typedef struct{
 	char label;
 	bool pressed;
 }Button;
+bool prevPressed[BTNNUM] = {0};
 
 union{
 	struct{
@@ -85,12 +86,11 @@ void btnInit(void)
 
 	for(uint i = 0; i < BTNNUM; i++){
 		pinMode(btn.arr[i].pin, INPUT_PULLUP);
-		btn.arr[i].pressed = true;
-		btnDraw(i);
+		btn.arr[i].pressed = false;
 	}
 }
 
-void btnRead()
+void btnRead(void)
 {
 	for(uint i = 0; i < BTNNUM; i++){
 		btn.arr[i].pressed = !digitalRead(btn.arr[i].pin);
@@ -99,12 +99,23 @@ void btnRead()
 
 void btnUpdate(void)
 {
-	static bool prevPressed[BTNNUM] = {0};
 	for(uint i = 0; i < BTNNUM; i++){
 		prevPressed[i] = btn.arr[i].pressed;
 		btn.arr[i].pressed = !digitalRead(btn.arr[i].pin);
+	}
+
+}
+
+void btnDraw(void)
+{
+	for(uint i = 0; i < BTNNUM; i++)
+		btnDraw(i);
+}
+
+void btnRedraw(void)
+{
+	for(uint i = 0; i < BTNNUM; i++){
 		if(btn.arr[i].pressed != prevPressed[i])
 			btnDraw(i);
 	}
-
 }

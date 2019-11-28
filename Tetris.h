@@ -4,9 +4,13 @@
 #define TETRISY	20
 #define BLOCKLEN	15
 
+bool blockInPiece(uint x, uint y, u16 piece)
+{
+	return piece &((0b1 << 15) >> (x+(4*b)));
+}
+
 // empty, static, red, green, cyan, pink, orange, blue
 typedef enum{B_E = 0, B_S, B_R, B_G, B_C, B_P, B_O, B_B}Block;
-
 
 Block gameboard[TETRISX][TETRISY] = {B_E};
 
@@ -44,7 +48,12 @@ void blockDraw(int x, int y, Block block)
 
 void pieceDraw(int x, int y, u16 piece, Block block)
 {
-	for(uint i )
+	for(uint y = 0; y < 4; y++){
+		for(uint x = 0; x < 4; x++){
+			if(blockInPiece())
+
+		}
+	}
 }
 
 void gameboardDraw(void)
