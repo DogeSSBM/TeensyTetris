@@ -27,3 +27,5 @@ typedef int64_t i64;
 #define U16MAX UINT16_MAX
 #define U32MAX UINT32_MAX
 #define U64MAX UINT64_MAX
+
+typedef u16 piece;

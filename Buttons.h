@@ -7,9 +7,8 @@
 typedef struct{
 	uint pin, x, y;
 	char label;
-	bool pressed;
+	bool pressed, prevPressed;
 }Button;
-bool prevPressed[BTNNUM] = {0};
 
 union{
 	struct{
@@ -25,20 +24,36 @@ union{
 	Button arr[BTNNUM];
 }btn;
 
-void btnDraw(uint n)
+void btnRedraw(uint n)
 {
 	screen.fillRect(btn.arr[n].x,btn.arr[n].y,BTNLEN,BTNLEN,btn.arr[n].pressed?LIGHTGREY:DARKGREY);
 	screen.drawRect(btn.arr[n].x,btn.arr[n].y,BTNLEN,BTNLEN,btn.arr[n].pressed?DARKGREY:LIGHTGREY);
 	screen.fillRect(0,0,SCREENX,SCREENY/2,BLACK);
 
-	screen.setCursor(0,0);
-	screen.setTextColor(WHITE);
-	screen.print("Redrawing ");
-	screen.println(btn.arr[n].label);
+	// screen.setCursor(0,0);
+	// screen.setTextColor(WHITE);
+	// screen.print("Redrawing ");
+	// screen.println(btn.arr[n].label);
 
-	screen.setCursor(btn.arr[n].x+4,btn.arr[n].y+4);
+	screen.setCursor(btn.arr[n].x+4,btn.arr[n].y);
 	screen.setTextColor(btn.arr[n].pressed?RED:BLUE);
 	screen.println(btn.arr[n].label);
+}
+
+void btnDraw(void)
+{
+	for(uint i = 0; i < BTNNUM; i++){
+		if(btn.arr[i].pressed != btn.arr[i].prevPressed)
+			btnRedraw(i);
+	}
+}
+
+void btnRead(void)
+{
+	for(uint i = 0; i < BTNNUM; i++){
+		btn.arr[i].prevPressed = btn.arr[i].pressed;
+		btn.arr[i].pressed = !digitalRead(btn.arr[i].pin);
+	}
 }
 
 void btnInit(void)
@@ -83,39 +98,9 @@ void btnInit(void)
 	btn.arr[7].y = BTNY;
 	btn.arr[7].x = SCREENX-BTNLEN;
 
-
 	for(uint i = 0; i < BTNNUM; i++){
 		pinMode(btn.arr[i].pin, INPUT_PULLUP);
-		btn.arr[i].pressed = false;
-	}
-}
-
-void btnRead(void)
-{
-	for(uint i = 0; i < BTNNUM; i++){
-		btn.arr[i].pressed = !digitalRead(btn.arr[i].pin);
-	}
-}
-
-void btnUpdate(void)
-{
-	for(uint i = 0; i < BTNNUM; i++){
-		prevPressed[i] = btn.arr[i].pressed;
-		btn.arr[i].pressed = !digitalRead(btn.arr[i].pin);
-	}
-
-}
-
-void btnDraw(void)
-{
-	for(uint i = 0; i < BTNNUM; i++)
-		btnDraw(i);
-}
-
-void btnRedraw(void)
-{
-	for(uint i = 0; i < BTNNUM; i++){
-		if(btn.arr[i].pressed != prevPressed[i])
-			btnDraw(i);
+		btn.arr[i].prevPressed = false;
+		btn.arr[i].pressed = true;
 	}
 }

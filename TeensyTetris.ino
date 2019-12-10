@@ -8,11 +8,10 @@ void setup()
 	randomSeed(analogRead(0));
 	screenInit();
 	btnInit();
-	tetris();
 }
 
 void loop()
 {
-	delay(5);
-	btnUpdate();
+	screenBlank();
+	tetris();
 }
