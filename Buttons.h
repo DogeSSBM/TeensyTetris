@@ -1,106 +1,151 @@
 #pragma once
-
+extern "C"{
 #define BTNNUM	8
-#define BTNLEN	(SCREENX/BTNNUM)
-#define BTNY	(SCREENY-BTNLEN*2)
 
-typedef struct{
-	uint pin, x, y;
-	char label;
-	bool pressed, prevPressed;
-}Button;
+#define BTN_U	16
+#define BTN_D	17
+#define BTN_L	18
+#define BTN_R	19
+#define BTN_1	8
+#define BTN_2	7
+#define BTN_B	6
+#define BTN_A	5
 
-union{
+const union{
+	char arr[BTNNUM] = {'U','D','L','R','1','2','B','A'};
 	struct{
-		Button u;
-		Button d;
-		Button l;
-		Button r;
-		Button s1;
-		Button s2;
-		Button b;
-		Button a;
+		char btnU;
+		char btnD;
+		char btnL;
+		char btnR;
+		char btn1;
+		char btn2;
+		char btnB;
+		char btnA;
 	};
-	Button arr[BTNNUM];
-}btn;
+	struct{
+		char btnD;
+		char btnU;
+		char btnR;
+		char btnL;
+		char btn2;
+		char btn1;
+		char btnA;
+		char btnB;
+	}inverse;
+}btnLabel = {'U','D','L','R','1','2','B','A'};
 
-void btnRedraw(uint n)
+const union{
+	uint arr[BTNNUM] = {16,17,18,19,8,7,6,5};
+	struct{
+		uint btnU;
+		uint btnD;
+		uint btnL;
+		uint btnR;
+		uint btn1;
+		uint btn2;
+		uint btnB;
+		uint btnA;
+	};
+	struct{
+		uint btnD;
+		uint btnU;
+		uint btnR;
+		uint btnL;
+		uint btn2;
+		uint btn1;
+		uint btnA;
+		uint btnB;
+	}inverse;
+}btnPin = {16,17,18,19,8,7,6,5};
+
+volatile union{
+	bool arr[BTNNUM];
+	struct{
+		bool btnU;
+		bool btnD;
+		bool btnL;
+		bool btnR;
+		bool btn1;
+		bool btn2;
+		bool btnB;
+		bool btnA;
+	};
+	struct{
+		bool btnD;
+		bool btnU;
+		bool btnR;
+		bool btnL;
+		bool btn2;
+		bool btn1;
+		bool btnA;
+		bool btnB;
+	}inverse;
+}btnState;
+
+volatile union{
+	bool arr[BTNNUM];
+	struct{
+		bool btnU;
+		bool btnD;
+		bool btnL;
+		bool btnR;
+		bool btn1;
+		bool btn2;
+		bool btnB;
+		bool btnA;
+	};
+	struct{
+		bool btnD;
+		bool btnU;
+		bool btnR;
+		bool btnL;
+		bool btn2;
+		bool btn1;
+		bool btnA;
+		bool btnB;
+	}inverse;
+}btnPressed;
+
+void onPress(void)
 {
-	screen.fillRect(btn.arr[n].x,btn.arr[n].y,BTNLEN,BTNLEN,btn.arr[n].pressed?LIGHTGREY:DARKGREY);
-	screen.drawRect(btn.arr[n].x,btn.arr[n].y,BTNLEN,BTNLEN,btn.arr[n].pressed?DARKGREY:LIGHTGREY);
-	screen.fillRect(0,0,SCREENX,SCREENY/2,BLACK);
-
-	// screen.setCursor(0,0);
-	// screen.setTextColor(WHITE);
-	// screen.print("Redrawing ");
-	// screen.println(btn.arr[n].label);
-
-	screen.setCursor(btn.arr[n].x+4,btn.arr[n].y);
-	screen.setTextColor(btn.arr[n].pressed?RED:BLUE);
-	screen.println(btn.arr[n].label);
+	cli();
+	for(uint i = 0; i < BTNNUM; i++) {
+		bool newState = !digitalRead(btnPin.arr[i]);
+		if(newState != btnState.arr[i]) {
+			btnState.arr[i] = newState;
+			btnPressed.arr[i] = true;
+		}
+	}
+	sei();
 }
 
-void btnDraw(void)
+void showPressed(void)
 {
-	for(uint i = 0; i < BTNNUM; i++){
-		if(btn.arr[i].pressed != btn.arr[i].prevPressed)
-			btnRedraw(i);
+	for(uint i = 0; i < BTNNUM; i++) {
+		if(btnPressed.arr[i]){
+			screenBlank();
+			setCursor(0,0);
+			screen.print(btnLabel.arr[i]);
+			printText(btnState.arr[i] ? " Pressed":" Released");
+			btnPressed.arr[i] = false;
+		}
 	}
 }
 
-void btnRead(void)
+void clearPressed(void)
 {
-	for(uint i = 0; i < BTNNUM; i++){
-		btn.arr[i].prevPressed = btn.arr[i].pressed;
-		btn.arr[i].pressed = !digitalRead(btn.arr[i].pin);
-	}
+	for(uint i = 0; i < BTNNUM; i++)
+		btnPressed.arr[i] = false;
 }
 
 void btnInit(void)
 {
-	btn.arr[0].label = 'u';
-	btn.arr[0].pin = 16;
-	btn.arr[0].y = BTNY - BTNLEN;
-	btn.arr[0].x = BTNLEN/2;
-
-	btn.arr[1].label = 'd';
-	btn.arr[1].pin = 17;
-	btn.arr[1].y = BTNY + BTNLEN;
-	btn.arr[1].x = BTNLEN/2;
-
-	btn.arr[2].label = 'l';
-	btn.arr[2].pin = 18;
-	btn.arr[2].y = BTNY;
-	btn.arr[2].x = 0;
-
-	btn.arr[3].label = 'r';
-	btn.arr[3].pin = 19;
-	btn.arr[3].y = BTNY;
-	btn.arr[3].x = BTNLEN;
-
-	btn.arr[4].label = '1';
-	btn.arr[4].pin = 8;
-	btn.arr[4].y = BTNY;
-	btn.arr[4].x = (SCREENX/2)-BTNLEN;
-
-	btn.arr[5].label = '2';
-	btn.arr[5].pin = 7;
-	btn.arr[5].y = BTNY;
-	btn.arr[5].x = SCREENX/2;
-
-	btn.arr[6].label = 'b';
-	btn.arr[6].pin = 6;
-	btn.arr[6].y = BTNY;
-	btn.arr[6].x = SCREENX-(BTNLEN*2);
-
-	btn.arr[7].label = 'a';
-	btn.arr[7].pin = 5;
-	btn.arr[7].y = BTNY;
-	btn.arr[7].x = SCREENX-BTNLEN;
-
-	for(uint i = 0; i < BTNNUM; i++){
-		pinMode(btn.arr[i].pin, INPUT_PULLUP);
-		btn.arr[i].prevPressed = false;
-		btn.arr[i].pressed = true;
+	for(uint i = 0; i < BTNNUM; i++) {
+		pinMode(btnPin.arr[i], INPUT_PULLUP);
+		attachInterrupt(btnPin.arr[i], onPress, CHANGE);
 	}
+	clearPressed();
 }
+
+} // extern "C"

@@ -28,4 +28,7 @@ typedef int64_t i64;
 #define U32MAX UINT32_MAX
 #define U64MAX UINT64_MAX
 
-typedef u16 piece;
+typedef u16 Color;
+typedef elapsedMillis Epoch;
+
+typedef enum{DIR_U=0, DIR_R, DIR_D, DIR_L, DIR_NUM}Direction;

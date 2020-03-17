@@ -1,21 +1,34 @@
 #pragma once
+extern "C"{
 
-uint score = 0;
+struct{
+	uint level;
+	uint togo;
+}score;
 
-uint addScore(uint s)
+void drawLabels(void)
 {
-	static uint score = 0;
-	score += s;
-	screen.fillRect(SCALE*12+SCALE/4, SCALE*10+SCALE/4, SCALE*5, SCALE, BLACK);
-	screen.setCursor(SCALE*12+SCALE/4, SCALE*10+SCALE/4);
-	screen.print(score);
-	return score;
+	const uint allX = (BOARDX+1)*BLOCKLEN;
+	const uint nextY = BLOCKLEN;
+	const uint levelY = BLOCKLEN*7;
+	const uint togoY = BLOCKLEN*10;
+	fillText(allX, nextY, "Next:");
+	fillText(allX, levelY, "Lvl:");
+	fillText(allX, togoY, "ToGo:");
 }
 
-void initScore()
+void drawScore(void)
 {
-	screen.setTextSize(2);
-	screen.setCursor(SCALE*12+SCALE/4, SCALE*8+SCALE/4);
-	screen.print("Score");
-	setScore(0);
+	setTextSize(2);
+	static char levelStr[5]	= {"0000"};
+	intToStr(score.level, levelStr);
+	static char togoStr[5]	= {"0000"};
+	intToStr(score.togo, togoStr);
+	const uint allX = (BOARDX+1)*BLOCKLEN;
+	const uint levelY = BLOCKLEN*8;
+	const uint togoY = BLOCKLEN*11;
+	fillText(allX, levelY, levelStr);
+	fillText(allX, togoY, togoStr);
+}
+
 }

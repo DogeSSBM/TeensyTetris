@@ -1,40 +1,43 @@
 #pragma once
 
-#define PIECE0 0b\
+#define PIECE_0 0b\
+1100\
+1100\
+0000\
+0000
+
+#define PIECE_1 0b\
+1111\
+0000\
+0000\
+0000
+
+#define PIECE_2 0b\
 0100\
 1110\
 0000\
-0000u
-#define PIECE1 0b\
-1100\
-1100\
-0000\
-0000u
-#define PIECE2 0b\
-1000\
-1000\
-1000\
-1000u
-#define PIECE3 0b\
-0100\
-0100\
-1100\
-0000u
-#define PIECE4 0b\
-1000\
-1000\
-1100\
-0000u
-#define PIECE5 0b\
-1100\
-0110\
-0000\
-0000u
-#define PIECE6 0b\
-0110\
-1100\
-0000\
-0000u
+0000
 
-const uint NUMPIECES = 7u;
-const piece pieces[] = {PIECE0, PIECE1, PIECE2, PIECE3, PIECE4, PIECE5, PIECE6};
+#define PIECE_3 0b\
+1110\
+0010\
+0000\
+0000
+
+#define PIECE_4 0b\
+1110\
+1000\
+0000\
+0000
+
+#define PIECE_5 0b\
+1100\
+0110\
+0000\
+0000
+
+#define PIECE_6 0b\
+0110\
+1100\
+0000\
+0000

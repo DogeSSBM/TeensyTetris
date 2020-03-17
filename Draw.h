@@ -1,97 +1,85 @@
 #pragma once
+extern "C"{
 
-void drawBlock(uint x, uint y)
+void drawBoxAbsolute(const uint x, const uint y,
+const Color c, const Color cl, const Color cd)
 {
-	screen.fillRect(SCALE*x+GAP, SCALE*y+GAP, SCALE-GAP*2, SCALE-GAP*2, WHITE);
+	setColor(cd);
+	fillSquare(x, y, BLOCKLEN);
+	setColor(cl);
+	fillSquare(x, y, BLOCKLEN-2);
+	setColor(c);
+	fillSquare(x+2, y+2, BLOCKLEN-4);
 }
 
-void drawBlackBlock(uint x, uint y)
+void drawBox(const uint x, const uint y,
+const Color c, const Color cl, const Color cd)
 {
-	screen.fillRect(SCALE*x+GAP, SCALE*y+GAP, SCALE-GAP*2, SCALE-GAP*2, BLACK);
+	drawBoxAbsolute(x*BLOCKLEN, y*BLOCKLEN, c, cl, cd);
+}
+
+void drawBoxNext(const uint x, const uint y,
+const Color c, const Color cl, const Color cd)
+{
+	drawBoxAbsolute((x+BOARDX+1)*BLOCKLEN, (y+1)*BLOCKLEN, c, cl, cd);
 }
 
 void drawWalls(void)
 {
-	for(uint i = 0; i < 21; i++){
-		// board walls
-		drawBlock(0, i);
-		drawBlock(11, i);
-		// rightmost wall
-		drawBlock(17, i);
+	// Board walls
+	for(uint y = 0; y < BOARDY; y++){
+		drawBox(BOARDX,	y, GREY, LIGHTGREY, DARKGREY);
 	}
 
-	for(uint i = 0; i < 12+6; i++){
-		// floor
-		drawBlock(i, 20);
+	// Smaller length vertical walls
+	for(uint y = 12; y < BOARDY; y++){
+		drawBox(BOARDX+1,	y, GREY, LIGHTGREY, DARKGREY);
+		drawBox(BOARDX+2,	y, GREY, LIGHTGREY, DARKGREY);
+		drawBox(BOARDX+3,	y, GREY, LIGHTGREY, DARKGREY);
+		drawBox(BOARDX+4,	y, GREY, LIGHTGREY, DARKGREY);
 	}
 
-	for(uint i = 12; i < 12+5; i++){
-		// next piece box
-		drawBlock(i, 0);
-		drawBlock(i, 7);
-		// score bottom
-		drawBlock(i, 12);
+	// Horizontal dividers
+	for(uint x = BOARDX; x < BOARDX+5; x++){
+		drawBox(x, 0, GREY, LIGHTGREY, DARKGREY);
+		drawBox(x, 6, GREY, LIGHTGREY, DARKGREY);
+		drawBox(x, 9, GREY, LIGHTGREY, DARKGREY);
 	}
 }
 
-void drawPiece(uint xpos, uint ypos, piece p)
+void drawPiece(const Piece p)
 {
 	for(uint y = 0; y < 4; y++){
 		for(uint x = 0; x < 4; x++){
-			if(getBlock(x,y,p))
-				drawBlock(xpos+x, ypos+y);
+			if(getBlock(x,y,p.blocks))
+				drawBox(p.x+x, p.y+y, p.color, p.light, p.dark);
 		}
 	}
 }
 
-void drawNext(piece n)
+void blankPiece(const Piece p)
 {
-
 	for(uint y = 0; y < 4; y++){
 		for(uint x = 0; x < 4; x++){
-			if(getBlock(x,y,n))
-				drawBlock(13+x, 2+y);
-			else
-				drawBlackBlock(13+x, 2+y);
+			if(getBlock(x,y,p.blocks))
+				drawBox(p.x+x, p.y+y, BLACK, BLACK, BLACK);
 		}
 	}
 }
 
 void drawBoard(void)
 {
-	for(uint y = 0; y < 20; y++){
-		for(uint x = 0; x < 10; x++){
-			if(board[x][y])
-				drawBlock(x+1, y);
-			else
-				drawBlackBlock(x+1, y);
+	for(uint y = 0; y < BOARDY; y++){
+		for(uint x = 0; x < BOARDX; x++){
+			if(board[x][y] != NUMPIECES){
+				drawBox(x,y,
+					pieceArr[board[x][y]].color,
+					pieceArr[board[x][y]].light,
+					pieceArr[board[x][y]].dark
+				);
+			}
 		}
 	}
 }
 
-void drawDbg(level l)
-{
-	screen.setCursor(0, SCALE*21);
-	screen.print("Lvl: ");
-	screen.print(l.levelNum);
-
-	screen.setCursor(SCREENX/2, SCALE*21);
-	screen.print("Goal: ");
-	screen.print(l.levelNum*5 - l.scoreRemaining);
-	screen.print(" of ");
-	screen.print(l.levelNum*5);
-
-	screen.setCursor(0, SCALE*22);
-	screen.print("fallMs: ");
-	screen.print(elapsedTime());
-	screen.print(" of ");
-	screen.print(l.falltime);
-}
-
-void drawAll(uint pieceX, uint pieceY, piece p, piece n)
-{
-	drawWalls();
-	drawBoard();
-	drawPiece(pieceX + 1, pieceY, p);
-	drawNext(n);
 }
